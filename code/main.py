@@ -1,6 +1,7 @@
 from settings import *
 from sprites import TmxMap, Player
 from groups import AllSprites
+from support import *
 
 class Game:
     def __init__(self):
@@ -12,14 +13,30 @@ class Game:
 
         # sprites
         self.player = None
+        self.bullet_surf = None
+        self.player_frames = None
+        self.worm_frames = None
+        self.bee_frames = None
+        self.fire_surf = None
 
         # groups 
         self.all_sprites = AllSprites()
         self.collision_sprites = pygame.sprite.Group()
 
         # setup
+        self.load_assets()
         self.setup()
 
+
+    def load_assets(self):
+        # graphics
+        self.player_frames = import_folder('..', 'images', 'player')
+        self.bullet_surf = import_image('..', 'images', 'gun', 'bullet')
+        self.fire_surf = import_image('..', 'images', 'gun', 'fire')
+        self.bee_frames = import_folder('..', 'images', 'enemies', 'bee')
+        self.worm_frames = import_folder('..', 'images', 'enemies', 'worm')
+
+        # sounds
 
     def setup(self):
         tmx_map = load_pygame(join('..', 'data', 'maps', 'world.tmx'))
