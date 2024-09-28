@@ -1,5 +1,6 @@
 from settings import *
-from sprites import Sprite, Player, Worm
+from sprites import Sprite, Player, Worm, Bee
+from timer import Timer
 from groups import AllSprites
 from support import *
 
@@ -29,6 +30,14 @@ class Game:
         # setup
         self.load_assets()
         self.setup()
+
+        # timer
+        self.bee_timer = Timer(200, func = self.create_bee)
+        self.bee_timer.activate()
+
+
+    def create_bee(self):
+        Bee((500, 600), self.all_sprites, self.bee_frames)
 
 
     def load_assets(self):
@@ -71,6 +80,7 @@ class Game:
                     self.running = False 
             
             # update
+            self.bee_timer.update()
             self.all_sprites.update(dt)
 
             # draw 
