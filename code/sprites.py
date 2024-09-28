@@ -1,4 +1,6 @@
 from settings import *
+from timer import Timer
+
 
 class Sprite(pygame.sprite.Sprite):
     def __init__(self, pos, surf, groups):
@@ -30,12 +32,19 @@ class Player(AnimatedSprite):
         self.gravity = 50
         self.on_floor = False
 
+        # timer
+        self.shoot_timer = Timer(500)
+
 
     def input(self):
         keys = pygame.key.get_pressed()
         self.dir.x = int(keys[pygame.K_RIGHT]) - int(keys[pygame.K_LEFT])
         if keys[pygame.K_SPACE] and self.on_floor:
             self.dir.y = -20
+
+        if keys[pygame.K_s] and not self.shoot_timer.activate:
+            print('shoot')
+            self.shoot_timer.activate()
 
 
     def move(self, dt):
@@ -81,6 +90,7 @@ class Player(AnimatedSprite):
 
 
     def update(self, dt):
+        self.shoot_timer.update()
         self.check_floor()
         self.input()
         self.move(dt)
