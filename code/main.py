@@ -1,5 +1,5 @@
 from settings import *
-from sprites import Sprite, Player
+from sprites import Sprite, Player, Worm
 from groups import AllSprites
 from support import *
 
@@ -13,11 +13,14 @@ class Game:
 
         # sprites
         self.player = None
+        self.bee = None
+        self.worm = None
         self.bullet_surf = None
         self.player_frames = None
         self.worm_frames = None
         self.bee_frames = None
         self.fire_surf = None
+        self.audio = {}
 
         # groups 
         self.all_sprites = AllSprites()
@@ -37,6 +40,8 @@ class Game:
         self.worm_frames = import_folder('..', 'images', 'enemies', 'worm')
 
         # sounds
+        self.audio = import_sound('..', 'audio')
+
 
     def setup(self):
         tmx_map = load_pygame(join('..', 'data', 'maps', 'world.tmx'))
@@ -53,6 +58,8 @@ class Game:
         for obj in tmx_map.get_layer_by_name('Entities'):
             if obj.name == 'Player':
                 self.player = Player((obj.x, obj. y), self.all_sprites, self.collision_sprites, self.player_frames)
+            elif obj.name == 'Worm':
+                self.worm = Worm((obj.x, obj.y), self.all_sprites, self.worm_frames)
 
 
     def run(self):

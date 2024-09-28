@@ -1,3 +1,5 @@
+import pygame.mixer
+
 from settings import *
 
 def import_image(*filepath, format = 'png', alpha = True):
@@ -14,3 +16,12 @@ def import_folder(*filepath):
             surf = pygame.image.load(full_path).convert_alpha()
             frames.append(surf)
     return frames
+
+
+def import_sound(*filepath):
+    audio = {}
+    for folder_path, _, file_names in walk(join(*filepath)):
+        for file_name in file_names:
+            full_path = join(folder_path, file_name)
+            audio[file_name.split('.')[0]] = pygame.mixer.Sound(full_path)
+    return audio
