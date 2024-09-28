@@ -1,18 +1,27 @@
 from settings import *
 
-class TmxMap(pygame.sprite.Sprite):
+class Sprite(pygame.sprite.Sprite):
     def __init__(self, pos, surf, groups):
         super().__init__(groups)
         self.image = surf
         self.rect = self.image.get_frect(topleft=pos)
 
 
-class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, groups, collision_sprites):
-        super().__init__(groups)
-        self.surf = pygame.Surface((40, 80))
-        self.image = self.surf
-        self.rect = self.image.get_frect(topleft=pos)
+class AnimatedSprite(Sprite):
+    def __init__(self, frames, pos, groups):
+        self.frames, self.frame_idx, self.anim_speed = frames, 0, 10
+        super().__init__(pos, self.frames[self.frame_idx], groups)
+
+
+    def animate(self, dt):
+        self.frame_idx += self.anim_speed * dt
+        self.image = self.frames[int(self.frame_idx) % len(self.frames)]
+
+
+class Player(AnimatedSprite):
+    def __init__(self, pos, groups, collision_sprites, frames):
+        super().__init__(frames, pos, groups)
+        self.flip = False
 
         # movement
         self.dir = pygame.Vector2()
@@ -58,7 +67,21 @@ class Player(pygame.sprite.Sprite):
         self.on_floor = True if bottom_rect.collidelist(level_rects) >= 0 else False
 
 
+    def animate(self, dt):
+        if self.dir.x != 0:
+            self.frame_idx += self.anim_speed * dt
+            self.flip = self.dir.x < 0
+        else:
+            self.frame_idx = 0
+
+        self.frame_idx = 1 if not self.on_floor else self.frame_idx
+
+        self.image = self.frames[int(self.frame_idx) % len(self.frames)]
+        self.image = pygame.transform.flip(self.image, self.flip, False)
+
+
     def update(self, dt):
         self.check_floor()
         self.input()
         self.move(dt)
+        self.animate(dt)

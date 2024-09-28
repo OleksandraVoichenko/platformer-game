@@ -1,5 +1,5 @@
 from settings import *
-from sprites import TmxMap, Player
+from sprites import Sprite, Player
 from groups import AllSprites
 from support import *
 
@@ -43,16 +43,16 @@ class Game:
 
         # ground look of map
         for x, y, image in tmx_map.get_layer_by_name('Main').tiles():
-            TmxMap((x * TILE_SIZE, y * TILE_SIZE), image, (self.all_sprites, self.collision_sprites))
+            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, (self.all_sprites, self.collision_sprites))
 
         # elements of decoration on the map
         for x, y, image in tmx_map.get_layer_by_name('Decoration').tiles():
-            TmxMap((x * TILE_SIZE, y * TILE_SIZE), image, self.all_sprites)
+            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, self.all_sprites)
 
         # spawners on the map
         for obj in tmx_map.get_layer_by_name('Entities'):
             if obj.name == 'Player':
-                self.player = Player((obj.x, obj. y), self.all_sprites, self.collision_sprites)
+                self.player = Player((obj.x, obj. y), self.all_sprites, self.collision_sprites, self.player_frames)
 
 
     def run(self):
