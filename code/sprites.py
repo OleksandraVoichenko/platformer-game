@@ -42,7 +42,7 @@ class Player(AnimatedSprite):
         if keys[pygame.K_SPACE] and self.on_floor:
             self.dir.y = -20
 
-        if keys[pygame.K_s] and not self.shoot_timer.activate:
+        if keys[pygame.K_s] and not self.shoot_timer:
             print('shoot')
             self.shoot_timer.activate()
 
