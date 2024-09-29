@@ -1,6 +1,3 @@
-import pygame.sprite
-
-from settings import *
 from sprites import Sprite, Player, Worm, Bee, Bullet, Fire
 from timer import Timer
 from groups import AllSprites
@@ -15,7 +12,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
 
-        # sprites
+        # None declarations
         self.player = None
         self.bee = None
         self.worm = None
@@ -24,6 +21,8 @@ class Game:
         self.worm_frames = None
         self.bee_frames = None
         self.fire_surf = None
+        self.level_height = None
+        self.level_width = None
         self.audio = {}
 
         # groups 
@@ -41,6 +40,8 @@ class Game:
 
 
     def create_bee(self):
+        """Creates Bee instance and calls on parameters such as frames, position of spawning, sprite groups, and speed."""
+
         Bee(frames=self.bee_frames,
             pos=((self.level_width + WINDOW_WIDTH), randint(0, self.level_height)),
             groups=(self.all_sprites, self.enemy_sprites),
@@ -48,25 +49,42 @@ class Game:
 
 
     def create_bullet(self, pos, direction):
+        """Creates aa Bullet instance with parameters like bullet surface, position of spawning, sprite groups.
+        Fire instance with surface, position of spawn, sprite groups, and player instance.
+        Adds audio to the shoot."""
+
+        # custom x value to fit the height of player's pistol
         x = pos[0] + direction * 34 if direction == 1 else pos[0] + direction * 34 - self.bullet_surf.get_width()
-        Bullet(self.bullet_surf, (x, pos[1]), direction, (self.all_sprites, self.bullet_sprites))
-        Fire(self.fire_surf, pos, self.all_sprites, self.player)
+        Bullet(surf=self.bullet_surf,
+               pos=(x, pos[1]),
+               direction=direction,
+               groups=(self.all_sprites, self.bullet_sprites))
+        Fire(surf=self.fire_surf,
+             pos=pos,
+             groups=self.all_sprites,
+             player=self.player)
         self.audio['shoot'].play()
 
 
     def load_assets(self):
+        """Loads animation frames and sounds into the game"""
+
         # graphics
         self.player_frames = import_folder('..', 'images', 'player')
-        self.bullet_surf = import_image('..', 'images', 'gun', 'bullet')
-        self.fire_surf = import_image('..', 'images', 'gun', 'fire')
         self.bee_frames = import_folder('..', 'images', 'enemies', 'bee')
         self.worm_frames = import_folder('..', 'images', 'enemies', 'worm')
+        self.bullet_surf = import_image('..', 'images', 'gun', 'bullet')
+        self.fire_surf = import_image('..', 'images', 'gun', 'fire')
 
         # sounds
         self.audio = import_sound('..', 'audio')
 
 
     def collision(self):
+        """Manages collision logic between Player vs. Enemies sprite group.
+        Manages bullet collisions with Enemy sprite group."""
+
+        # bullet collision
         for bullet in self.bullet_sprites:
             sprite_collision = pygame.sprite.spritecollide(bullet, self.enemy_sprites, False, pygame.sprite.collide_mask)
             if sprite_collision:
@@ -75,11 +93,15 @@ class Game:
                 for sprite in sprite_collision:
                     sprite.destroy()
 
+        # player collision
         if pygame.sprite.spritecollide(self.player, self.enemy_sprites, False, pygame.sprite.collide_mask):
             self.running = False
 
 
     def setup(self):
+        """Loads tmx map and 3 layers: ground, decorations, spawners for player and worms.
+        Loads background audio for the game."""
+
         tmx_map = load_pygame(join('..', 'data', 'maps', 'world.tmx'))
         self.level_width = tmx_map.width * TILE_SIZE
         self.level_height = tmx_map.height * TILE_SIZE
@@ -103,6 +125,8 @@ class Game:
 
 
     def run(self):
+        """Runs game (represents main loop)."""
+
         while self.running:
             dt = self.clock.tick(FRAMERATE) / 1000 
 
@@ -121,6 +145,7 @@ class Game:
             pygame.display.update()
         
         pygame.quit()
+
 
 if __name__ == '__main__':
     game = Game()
