@@ -80,6 +80,7 @@ class Enemy(AnimatedSprite):
     def update(self, dt):
         self.move(dt)
         self.animate(dt)
+        self.constraint()
 
 
 class Player(AnimatedSprite):
@@ -179,13 +180,19 @@ class Bee(Enemy):
 
 
 class Worm(Enemy):
-    def __init__(self, frames, pos, groups ):
-        super().__init__(frames, pos, groups)
+    def __init__(self, frames, rect, groups):
+        super().__init__(frames, rect.topleft, groups)
+        self.rect.bottomleft = rect.bottomleft
+        self.main_rect = rect
+        self.speed = randint(100, 200)
+        self.dir = 1
 
 
     def constraint(self):
-        pass
+        if not self.main_rect.contains(self.rect):
+            self.dir *= -1
+            self.frames = [pygame.transform.flip(surf, True, False) for surf in self.frames]
 
 
     def move(self, dt):
-        pass
+        self.rect.x += self.dir * self.speed * dt

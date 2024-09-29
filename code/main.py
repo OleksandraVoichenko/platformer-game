@@ -82,9 +82,7 @@ class Game:
             if obj.name == 'Player':
                 self.player = Player((obj.x, obj. y), self.all_sprites, self.collision_sprites, self.player_frames, self.create_bullet)
             elif obj.name == 'Worm':
-                self.worm = Worm(frames=self.worm_frames,
-                                 pos=(obj.x, obj.y),
-                                 groups=(self.all_sprites,))
+                Worm(self.worm_frames, pygame.FRect(obj.x, obj.y, obj.width, obj.height), (self.all_sprites,))
 
 
     def run(self):
