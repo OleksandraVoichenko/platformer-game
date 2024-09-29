@@ -71,15 +71,21 @@ class AnimatedSprite(Sprite):
 class Enemy(AnimatedSprite):
     def __init__(self, frames, pos, groups):
         super().__init__(frames, pos, groups)
+        self.deat_timer = Timer(200, func = self.kill)
 
 
-    def constraint(self):
-        pass
+    def destroy(self):
+        self.deat_timer.activate()
+        self.anim_speed = 0
+        self.image = pygame.mask.from_surface(self.image).to_surface()
+        self.image.set_colorkey('black')
 
 
     def update(self, dt):
-        self.move(dt)
-        self.animate(dt)
+        self.deat_timer.update()
+        if not self.deat_timer:
+            self.move(dt)
+            self.animate(dt)
         self.constraint()
 
 
