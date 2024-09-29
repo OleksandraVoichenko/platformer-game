@@ -36,11 +36,11 @@ class Game:
         self.setup()
 
         # timer
-        self.bee_timer = Timer(200, func = self.create_bee, autostart = True, repeat = True)
+        self.bee_timer = Timer(100, func = self.create_bee, autostart = True, repeat = True)
 
 
     def create_bee(self):
-        Bee((randint(300, 600), randint(300, 600)), self.all_sprites, self.bee_frames)
+        Bee(pos=((self.level_width + WINDOW_WIDTH), randint(0, self.level_height)), groups=(self.all_sprites,), frames=self.bee_frames, speed=randint(300, 500))
 
 
     def create_bullet(self, pos, direction):
@@ -63,6 +63,8 @@ class Game:
 
     def setup(self):
         tmx_map = load_pygame(join('..', 'data', 'maps', 'world.tmx'))
+        self.level_width = tmx_map.width * TILE_SIZE
+        self.level_height = tmx_map.height * TILE_SIZE
 
         # ground look of map
         for x, y, image in tmx_map.get_layer_by_name('Main').tiles():
