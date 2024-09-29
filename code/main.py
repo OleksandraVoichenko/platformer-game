@@ -36,11 +36,14 @@ class Game:
         self.setup()
 
         # timer
-        self.bee_timer = Timer(100, func = self.create_bee, autostart = True, repeat = True)
+        self.bee_timer = Timer(200, func = self.create_bee, autostart = True, repeat = True)
 
 
     def create_bee(self):
-        Bee(pos=((self.level_width + WINDOW_WIDTH), randint(0, self.level_height)), groups=(self.all_sprites,), frames=self.bee_frames, speed=randint(300, 500))
+        Bee(frames=self.bee_frames,
+            pos=((self.level_width + WINDOW_WIDTH), randint(0, self.level_height)),
+            groups=(self.all_sprites),
+            speed=randint(300, 500))
 
 
     def create_bullet(self, pos, direction):
@@ -79,7 +82,9 @@ class Game:
             if obj.name == 'Player':
                 self.player = Player((obj.x, obj. y), self.all_sprites, self.collision_sprites, self.player_frames, self.create_bullet)
             elif obj.name == 'Worm':
-                self.worm = Worm((obj.x, obj.y), self.all_sprites, self.worm_frames)
+                self.worm = Worm(frames=self.worm_frames,
+                                 pos=(obj.x, obj.y),
+                                 groups=(self.all_sprites,))
 
 
     def run(self):

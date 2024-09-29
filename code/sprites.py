@@ -66,7 +66,7 @@ class AnimatedSprite(Sprite):
 
 
 class Enemy(AnimatedSprite):
-    def __init__(self, pos, frames, groups):
+    def __init__(self, frames, pos, groups):
         super().__init__(frames, pos, groups)
 
 
@@ -154,19 +154,17 @@ class Player(AnimatedSprite):
 
 
 class Bee(Enemy):
-    def __init__(self, pos, groups, frames, speed):
+    def __init__(self, frames, pos, groups, speed):
         super().__init__(frames, pos, groups)
         self.speed = speed
-        self.amplitude = randint(500, 600)
 
 
     def move(self, dt):
         self.rect.x -= self.speed * dt
-        self.rect.y += sin(pygame.time.get_ticks()) * self.amplitude * dt
 
 
 class Worm(Enemy):
-    def __init__(self, pos, groups, frames):
+    def __init__(self, frames, pos, groups ):
         super().__init__(frames, pos, groups)
 
 
