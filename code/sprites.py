@@ -9,6 +9,49 @@ class Sprite(pygame.sprite.Sprite):
         self.rect = self.image.get_frect(topleft=pos)
 
 
+class Bullet(Sprite):
+    def __init__(self, surf, pos, direction, groups):
+        super().__init__(pos, surf, groups)
+
+        # movement
+        self.dir = direction
+        self.speed = 850
+
+        # rotation
+        self.image = pygame.transform.flip(self.image, direction == -1, False)
+
+
+    def update(self, dt):
+       self.rect.x += self.dir * self.speed * dt
+
+
+class Fire(Sprite):
+    def __init__(self, surf, pos, groups, player):
+        super().__init__(pos, surf, groups)
+        self.player = player
+        self.flip = player.flip
+        self.timer = Timer(100, autostart=True, func = self.kill)
+        self.y_offset = pygame.Vector2(0, 5)
+
+        if self.player.flip:
+            self.rect.midright = self.player.rect.midleft + self.y_offset
+            self.image = pygame.transform.flip(self.image, True, False)
+        else:
+            self.rect.midleft = self.player.rect.midright + self.y_offset
+
+
+    def update(self, dt):
+        self.timer.update()
+
+        if self.player.flip:
+            self.rect.midright = self.player.rect.midleft + self.y_offset
+        else:
+            self.rect.midleft = self.player.rect.midright + self.y_offset
+
+        if self.flip != self.player.flip:
+            self.kill()
+
+
 class AnimatedSprite(Sprite):
     def __init__(self, frames, pos, groups):
         self.frames, self.frame_idx, self.anim_speed = frames, 0, 10
@@ -21,9 +64,10 @@ class AnimatedSprite(Sprite):
 
 
 class Player(AnimatedSprite):
-    def __init__(self, pos, groups, collision_sprites, frames):
+    def __init__(self, pos, groups, collision_sprites, frames, create_bullet):
         super().__init__(frames, pos, groups)
         self.flip = False
+        self.create_bullet = create_bullet
 
         # movement
         self.dir = pygame.Vector2()
@@ -43,7 +87,7 @@ class Player(AnimatedSprite):
             self.dir.y = -20
 
         if keys[pygame.K_s] and not self.shoot_timer:
-            print('shoot')
+            self.create_bullet(self.rect.center, -1 if self.flip else 1)
             self.shoot_timer.activate()
 
 

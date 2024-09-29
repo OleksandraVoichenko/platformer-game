@@ -1,5 +1,7 @@
+import pygame.sprite
+
 from settings import *
-from sprites import Sprite, Player, Worm, Bee
+from sprites import Sprite, Player, Worm, Bee, Bullet, Fire
 from timer import Timer
 from groups import AllSprites
 from support import *
@@ -27,6 +29,7 @@ class Game:
         # groups 
         self.all_sprites = AllSprites()
         self.collision_sprites = pygame.sprite.Group()
+        self.bullet_sprites = pygame.sprite.Group()
 
         # setup
         self.load_assets()
@@ -38,6 +41,12 @@ class Game:
 
     def create_bee(self):
         Bee((randint(300, 600), randint(300, 600)), self.all_sprites, self.bee_frames)
+
+
+    def create_bullet(self, pos, direction):
+        x = pos[0] + direction * 34 if direction == 1 else pos[0] + direction * 34 - self.bullet_surf.get_width()
+        Bullet(self.bullet_surf, (x, pos[1]), direction, (self.all_sprites, self.bullet_sprites))
+        Fire(self.fire_surf, pos, self.all_sprites, self.player)
 
 
     def load_assets(self):
@@ -66,7 +75,7 @@ class Game:
         # spawners on the map
         for obj in tmx_map.get_layer_by_name('Entities'):
             if obj.name == 'Player':
-                self.player = Player((obj.x, obj. y), self.all_sprites, self.collision_sprites, self.player_frames)
+                self.player = Player((obj.x, obj. y), self.all_sprites, self.collision_sprites, self.player_frames, self.create_bullet)
             elif obj.name == 'Worm':
                 self.worm = Worm((obj.x, obj.y), self.all_sprites, self.worm_frames)
 
